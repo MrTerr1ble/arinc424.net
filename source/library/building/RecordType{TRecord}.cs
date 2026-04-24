@@ -84,13 +84,14 @@ internal sealed class RecordType<TRecord>
 
         while (strings.TryDequeue(out @string))
         {
-            if (continuations is null || !continuations.TryHold(@string))
+            if (continuations is not null && continuations.TryHold(@string))
             {
-                Build(@string);
                 continue;
             }
-            continuations.Process(build.Record);
+            continuations?.Process(build.Record);
+            Build(@string);
         }
+        continuations?.Process(build.Record);
         return Unsafe.As<Queue<Build>>(builds);
 
         void Build(string @string)
